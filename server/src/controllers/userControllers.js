@@ -32,13 +32,41 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   res.status(200).json({
-    name: `${user.firstName}, ${user.lastName}`,
+    name: `${user.firstName} ${user.lastName}`,
     email: user.email,
     token: jwtGenerator(user._id),
   });
 });
 
-const loginUser = asyncHandler(async (req, res) => {});
+//Login logic
+const loginUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(400);
+    throw new Error("Please fill in all the fields.");
+  }
+
+  //Check if email exists
+  const user = await User.findOne({ email });
+  if (!user) {
+    res.status(400);
+    throw new Error("User does not exist");
+  }
+
+  //validate password
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) {
+    res.status(400);
+    throw new Error("Invalid credentials");
+  }
+
+  res.status(200).json({
+    name: `${user.firstName} ${user.lastName}`,
+    email: user.email,
+    token: jwtGenerator(user._id),
+  });
+});
 
 module.exports = {
   registerUser,
