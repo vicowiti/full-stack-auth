@@ -1,6 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import Router from "../backend/routes/userRoutes.js"
+import userRoutes from "../backend/routes/userRoutes.js"
 
 // console.log("myrouter",userRouter);
 
@@ -12,7 +12,7 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-app.use("/api/v1/users", Router )
+app.use("/api/v1/users", userRoutes )
 
 // Test endpoint
 
