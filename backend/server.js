@@ -1,28 +1,37 @@
-import express from 'express'
-import dotenv from 'dotenv'
-import userRoutes from "../backend/routes/userRoutes.js"
+import express from "express";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import userRoutes from "../backend/routes/userRoutes.js";
+import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import { connectDb } from "./config/db.js";
+dotenv.config();
+// Call Db
+connectDb();
 
 // console.log("myrouter",userRouter);
 
-dotenv.config()
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 5000;
 // Initialize app
-const app = express()
+const app = express();
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-app.use("/api/v1/users", userRoutes )
+app.use("/api/v1/users", userRoutes);
 
 // Test endpoint
 
 app.get("/", (req, res) => {
-    res.status(200).json({
-        message: 'We up'
-    })
-})
+  res.status(200).json({
+    message: "We up",
+  });
+});
 
-app.listen(PORT, console.log(`App running on port: ${PORT}`))
+app.use(notFound);
+app.use(errorHandler);
+
+app.listen(PORT, console.log(`App running on port: ${PORT}`));
 
 // AUTH ROUTES
 
