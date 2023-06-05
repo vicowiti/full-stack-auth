@@ -118,8 +118,24 @@ const getProfile = asyncHandler(async (req, res) => {
 //protected: true
 
 const updateProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    user.password =
+      (await bcryptjs.hash(req.body.password, 10)) || user.password;
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  const updatedUser = await user.save();
+
   res.status(200).json({
-    message: "Update User Profile",
+    _id: updatedUser._id,
+    name: updatedUser.name,
+    email: updatedUser.email,
   });
 });
 
